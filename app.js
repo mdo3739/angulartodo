@@ -3,13 +3,15 @@ var express = require('express');
 var app = express();
 var config = require('./config/configGetter.js');
 var mongoose = require('mongoose');
-var routes = require('./routes/toDoRouter.js');
+var toDoroutes = require('./routes/toDoRouter.js');
+var userRoutes = require('./routes/userRouter.js');
 
 var port = process.env.PORT || 8000;
 
 // Middlewares
 app.set('view engine', 'jade');
-app.use('/', routes);
+app.use('/api', toDoroutes);
+app.use('/api/user', userRoutes);
 
 // Connecting to database
 mongoose.connect(config.getMongoConnection());
