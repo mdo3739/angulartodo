@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var toDoSchema = new Schema({
-    user: String,
+    userID: String,
     todo: String,
     dateCreated: { type: Date, default: Date.now },
     completed: {type: Boolean, default: false}

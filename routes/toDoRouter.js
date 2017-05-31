@@ -2,13 +2,24 @@ var express = require('express');
 var router = express.Router();
 var ToDo = require('../models/toDoModel');
 var bodyParser = require('body-parser');
-
-router.use(bodyParser.json());
 var jsonParser = bodyParser.json();
 
-router.post('/', jsonParser, function(req, res){
+router.use(jsonParser);
+
+
+router.get('/:userid', function(req, res){
+    
+    ToDo.find({}, function(err, todos) {
+        res.send(todos.reduce(function(todoMap, item) {
+            todoMap[item.id] = item;
+            return todoMap;
+        }, {}));
+    });
+});
+
+router.post('/', function(req, res){
     var newToDo = ToDo({
-        user: req.body.user,
+        userID: req.body.user,
         todo: req.body.todo,
         dateCreated: Date.now(),
         completed: false
@@ -19,20 +30,20 @@ router.post('/', jsonParser, function(req, res){
     });
 });
 
-router.put('/', jsonParser, function(req, res){
+router.put('/:_id', jsonParser, function(req, res){
+    var thisOne = req.params._id;
 
-    ToDo.findByIdAndUpdate(
-        
-        req.body._id, 
-        { 
-            todo: req.body.todo,
-            completed: req.body.completed,
-        }, 
-        function(err, todo) {
-            if (err) throw err;
-            else {res.send('Update Successful');}
+    ToDo.findById(thisOne, function(err, user){
+        if (err) throw err;
+        else {
+            user.todo = req.body.todo || user.todo;
+            user.completed = req.body.completed || user.completed;
+            user.save(function(err, result){
+                if(err) throw err;
+                else {res.send('Update Successful');}
+            });
         }
-    );
+    });
 });
 
 router.delete('/:_id', function(req, res){
