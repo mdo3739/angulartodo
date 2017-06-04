@@ -5,13 +5,19 @@ var config = require('./config/configGetter.js');
 var mongoose = require('mongoose');
 var toDoroutes = require('./routes/toDoRouter.js');
 var userRoutes = require('./routes/userRouter.js');
+var loginRoutes = require('./routes/login');
+var jwt    = require('jsonwebtoken');
+var morgan = require('morgan');
+var repl = require('repl');
 
 var port = process.env.PORT || 8000;
 
 // Middlewares
 app.set('view engine', 'jade');
-app.use('/api', toDoroutes);
+app.use('/api/todo', toDoroutes);
 app.use('/api/user', userRoutes);
+app.use('/login', loginRoutes);
+app.use(morgan('dev'));
 
 // Connecting to database
 mongoose.connect(config.getMongoConnection());

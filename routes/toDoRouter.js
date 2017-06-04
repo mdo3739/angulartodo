@@ -4,9 +4,6 @@ var ToDo = require('../models/toDoModel');
 var bodyParser = require('body-parser');
 var jsonParser = bodyParser.json();
 
-router.use(jsonParser);
-
-
 router.get('/:userid', function(req, res){
     
     ToDo.find({}, function(err, todos) {
@@ -17,9 +14,9 @@ router.get('/:userid', function(req, res){
     });
 });
 
-router.post('/', function(req, res){
+router.post('/', jsonParser, function(req, res){
     var newToDo = ToDo({
-        userID: req.body.user,
+        userID: req.body.userID,
         todo: req.body.todo,
         dateCreated: Date.now(),
         completed: false
