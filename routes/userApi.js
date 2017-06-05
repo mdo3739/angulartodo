@@ -7,6 +7,7 @@ var urlEncodedParser = bodyParser.urlencoded();
 var jwt = require('jsonwebtoken');
 var config = require('../config/configGetter');
 var cookie = require('cookie-parser');
+var authenticate = require('../middleware/authenticate');
 
 router.post('/', urlEncodedParser, function(req, res){
     var newUser = User({
@@ -29,41 +30,13 @@ router.post('/', urlEncodedParser, function(req, res){
     
 });
 
-// route middleware to verify a token
-router.use(urlEncodedParser, cookie(config.getCookieSecret()), function(req, res, next) {
-
-  var token = req.cookies.auth;
-
-  // decode token
-  if (token) {
-
-    // verifies secret and checks exp
-    jwt.verify(token, config.getSecret(), function(err, decoded) {      
-      if (err) {
-        return res.json({ success: false, message: 'Failed to authenticate token.' });    
-      } else {
-        // if everything is good, save to request for use in other routes
-        req.decoded = decoded;    
-        next();
-      }
-    });
-
-  } else {
-
-    // if there is no token
-    // return an error
-    return res.status(403).send({ 
-        success: false, 
-        message: 'No token provided.' 
-    });
-
-  }
-});
-
-router.get('/:_id', function(req, res){
-    User.findById(_id, function(err, user){
+router.get('/:_id', authenticate(), function(req, res){
+    User.findById(req.params._id, function(err, user){
         if(err){throw err;}
-        else {res.send(user);}
+        else if(user.id === req.decoded._doc._id){res.send(user);}
+        else {
+            res.send("This is not your profile!");
+        }
     });
 });
 

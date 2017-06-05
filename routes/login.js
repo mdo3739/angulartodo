@@ -24,8 +24,9 @@ router.post('/', urlEncodedParser, cookie(config.getCookieSecret()), function(re
                     // create a token
                     var token = jwt.sign(user, config.getSecret(), {expiresIn: '4h'});
 
+                    req.session = user;
                     res.cookie('auth', token);
-                    res.redirect('/user/'+ user._id);
+                    res.redirect('api/user/'+ user._id);
                 }else{
                     res.json({success: false, message: "Wrong Password"});
                 }

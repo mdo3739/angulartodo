@@ -3,8 +3,8 @@ var express = require('express');
 var app = express();
 var config = require('./config/configGetter.js');
 var mongoose = require('mongoose');
-var toDoroutes = require('./routes/toDoRouter.js');
-var userRoutes = require('./routes/userRouter.js');
+var toDoApi = require('./routes/toDoApi.js');
+var userApi = require('./routes/userApi.js');
 var loginRoutes = require('./routes/login');
 var jwt    = require('jsonwebtoken');
 var morgan = require('morgan');
@@ -14,8 +14,8 @@ var port = process.env.PORT || 8000;
 
 // Middlewares
 app.set('view engine', 'jade');
-app.use('/api/todo', toDoroutes);
-app.use('/api/user', userRoutes);
+app.use('/api/todo', toDoApi);
+app.use('/api/user', userApi);
 app.use('/login', loginRoutes);
 app.use(morgan('dev'));
 
