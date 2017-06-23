@@ -7,9 +7,10 @@ var jwt = require('jsonwebtoken');
 var User = require('../models/userModel');
 var bcrypt = require('bcrypt');
 var cookie = require('cookie-parser');
+var path = require('path');
 
 router.get('/', function(req, res){
-    res.render('login');
+    res.sendFile(path.join(__dirname, '../', 'client', 'views', 'home.jade'));
 });
 
 router.post('/', urlEncodedParser, cookie(config.getCookieSecret()), function(req, res){

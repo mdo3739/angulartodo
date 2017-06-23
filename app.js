@@ -7,17 +7,20 @@ var toDoApi = require('./routes/toDoApi.js');
 var userApi = require('./routes/userApi.js');
 var loginRoutes = require('./routes/login');
 var jwt    = require('jsonwebtoken');
-var morgan = require('morgan');
+var logger = require('morgan');
 var repl = require('repl');
 
 var port = process.env.PORT || 8000;
+
 
 // Middlewares
 app.set('view engine', 'jade');
 app.use('/api/todo', toDoApi);
 app.use('/api/user', userApi);
-app.use('/login', loginRoutes);
-app.use(morgan('dev'));
+app.use('/', loginRoutes);
+app.use(logger('dev'));
+app.use("/javascripts", express.static(__dirname + '/client/javascripts'));
+app.use('/views', express.static(__dirname + '/views'));
 
 // Connecting to database
 mongoose.connect(config.getMongoConnection());
