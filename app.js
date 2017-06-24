@@ -5,10 +5,11 @@ var config = require('./config/configGetter.js');
 var mongoose = require('mongoose');
 var toDoApi = require('./routes/toDoApi.js');
 var userApi = require('./routes/userApi.js');
-var loginRoutes = require('./routes/login');
+var sessionRoutes = require('./routes/session');
 var jwt    = require('jsonwebtoken');
 var logger = require('morgan');
 var repl = require('repl');
+var welcomePage = require('./routes/welcome.js');
 
 var port = process.env.PORT || 8000;
 
@@ -17,7 +18,7 @@ var port = process.env.PORT || 8000;
 app.set('view engine', 'jade');
 app.use('/api/todo', toDoApi);
 app.use('/api/user', userApi);
-app.use('/', loginRoutes);
+app.use('/', welcomePage);
 app.use(logger('dev'));
 app.use("/javascripts", express.static(__dirname + '/client/javascripts'));
 app.use('/views', express.static(__dirname + '/client/views'));

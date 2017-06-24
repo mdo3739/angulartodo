@@ -7,11 +7,6 @@ var jwt = require('jsonwebtoken');
 var User = require('../models/userModel');
 var bcrypt = require('bcrypt');
 var cookie = require('cookie-parser');
-var path = require('path');
-
-router.get('/', function(req, res){
-    res.sendFile(path.join(__dirname, '../', 'client', 'views', 'home.html'));
-});
 
 router.post('/', urlEncodedParser, cookie(config.getCookieSecret()), function(req, res){
     User.findOne({email: req.body.email.toUpperCase()}, function(err, user){
