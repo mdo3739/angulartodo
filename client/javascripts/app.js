@@ -5,7 +5,7 @@ todoApp.config(function($routeProvider){
     $routeProvider
 
     .when('/', {
-        templateUrl: 'views/login.jade',
+        templateUrl: 'views/login.html',
         controller: 'homeController'
     })
 });

@@ -20,7 +20,7 @@ app.use('/api/user', userApi);
 app.use('/', loginRoutes);
 app.use(logger('dev'));
 app.use("/javascripts", express.static(__dirname + '/client/javascripts'));
-app.use('/views', express.static(__dirname + '/views'));
+app.use('/views', express.static(__dirname + '/client/views'));
 
 // Connecting to database
 mongoose.connect(config.getMongoConnection());

@@ -10,7 +10,7 @@ var cookie = require('cookie-parser');
 var path = require('path');
 
 router.get('/', function(req, res){
-    res.sendFile(path.join(__dirname, '../', 'client', 'views', 'home.jade'));
+    res.sendFile(path.join(__dirname, '../', 'client', 'views', 'home.html'));
 });
 
 router.post('/', urlEncodedParser, cookie(config.getCookieSecret()), function(req, res){
