@@ -6,23 +6,29 @@ var mongoose = require('mongoose');
 var toDoApi = require('./routes/toDoApi.js');
 var userApi = require('./routes/userApi.js');
 var sessionRoutes = require('./routes/session');
-var jwt    = require('jsonwebtoken');
-var logger = require('morgan');
-var repl = require('repl');
 var welcomePage = require('./routes/welcome.js');
+var logger = require('morgan');
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
 
 var port = process.env.PORT || 8000;
 
 
 // Middlewares
-app.set('view engine', 'jade');
 app.use('/api/todo', toDoApi);
 app.use('/api/user', userApi);
 app.use('/session', sessionRoutes);
 app.use('/', welcomePage);
-app.use(logger('dev'));
 app.use("/javascripts", express.static(__dirname + '/client/javascripts'));
 app.use('/views', express.static(__dirname + '/client/views'));
+app.use(logger('dev'));
+app.use(cookieParser());
+
+app.use(session({ secret: config.getSecret() })); // session secret
+app.use(passport.initialize());
+app.use(passport.session()); // persistent login sessions
+
+require('./app/routes.js')(app, passport); // load our routes and pass in our app and fully configured passport
 
 // Connecting to database
 mongoose.connect(config.getMongoConnection());
