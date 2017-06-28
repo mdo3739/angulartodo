@@ -8,7 +8,7 @@ var User = require('../models/userModel');
 var bcrypt = require('bcrypt');
 var cookie = require('cookie-parser');
 
-router.post('/', urlEncodedParser, cookie(config.getCookieSecret()), function(req, res){
+router.post('/login', urlEncodedParser, cookie(config.getCookieSecret()), function(req, res){
     User.findOne({email: req.body.email.toUpperCase()}, function(err, user){
         if(err) throw err;
         if(!user){
@@ -19,10 +19,10 @@ router.post('/', urlEncodedParser, cookie(config.getCookieSecret()), function(re
                     // if user is found and password is right
                     // create a token
                     var token = jwt.sign(user, config.getSecret(), {expiresIn: '4h'});
-
-                    req.session = user;
+                    console.log(user);
+                    res.cookie('user', user);
                     res.cookie('auth', token);
-                    res.redirect('api/user/'+ user._id);
+                    res.redirect('/api/user/'+ user._id);
                 }else{
                     res.json({success: false, message: "Wrong Password"});
                 }

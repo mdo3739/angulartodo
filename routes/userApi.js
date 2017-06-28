@@ -30,12 +30,12 @@ router.post('/', urlEncodedParser, function(req, res){
     
 });
 
-router.get('/:_id', authenticate(), function(req, res){
+router.get('/:_id', function(req, res){
     User.findById(req.params._id, function(err, user){
         if(err){throw err;}
-        else if(user.id === req.decoded._doc._id){res.send(user);}
         else {
-            res.send("This is not your profile!");
+            console.log('req.decoded = ' + req.decoded);
+            res.send(user);
         }
     });
 });

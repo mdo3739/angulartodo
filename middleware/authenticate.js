@@ -3,7 +3,8 @@ var urlEncodedParser = require('body-parser').urlencoded();
 
 module.exports = function() {
   return function(req, res, next) {
-    if(!req.decoded){
+    console.log(req.session);
+    if(!req.session){
       return res.end("Not Logged In");
     }
     else{

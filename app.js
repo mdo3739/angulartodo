@@ -18,6 +18,7 @@ var port = process.env.PORT || 8000;
 app.set('view engine', 'jade');
 app.use('/api/todo', toDoApi);
 app.use('/api/user', userApi);
+app.use('/session', sessionRoutes);
 app.use('/', welcomePage);
 app.use(logger('dev'));
 app.use("/javascripts", express.static(__dirname + '/client/javascripts'));
