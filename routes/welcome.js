@@ -2,8 +2,14 @@ var express = require('express');
 var router = express.Router();
 var path = require('path');
 
-router.get('/', function(req, res){
-    res.sendFile(path.join(__dirname, '../', 'client', 'views', 'home.html'));
-});
+module.exports = function(app, passport){
 
-module.exports = router;
+    app.get('/', function(req, res){
+        res.sendFile(path.join(__dirname, '../', 'client', 'views', 'layouts.html'));
+    });
+
+    app.post('/login', passport.authenticate('local', {
+        successRedirect: '/success',
+        failureRedirect: '/failure'
+    }));
+};

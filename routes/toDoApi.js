@@ -1,10 +1,9 @@
 var express = require('express');
 var ToDo = require('../models/toDoModel');
-var bodyParser = require('body-parser');
 var jsonParser = bodyParser.json();
 
 module.exports = function(app, passport){
-    app.get('/:userid', function(req, res){
+    app.get('api/todo/:userid', function(req, res){
         
         ToDo.find({}, function(err, todos) {
             res.send(todos.reduce(function(todoMap, item) {
@@ -14,7 +13,7 @@ module.exports = function(app, passport){
         });
     });
 
-    app.post('/', jsonParser, function(req, res){
+    app.post('/api/todo', jsonParser, function(req, res){
         var newToDo = ToDo({
             userID: req.body.userID,
             todo: req.body.todo,
@@ -27,7 +26,7 @@ module.exports = function(app, passport){
         });
     });
 
-    app.put('/:_id', jsonParser, function(req, res){
+    app.put('api/todo/:_id', jsonParser, function(req, res){
         var thisOne = req.params._id;
 
         ToDo.findById(thisOne, function(err, user){
@@ -43,7 +42,7 @@ module.exports = function(app, passport){
         });
     });
 
-    app.delete('/:_id', function(req, res){
+    app.delete('/api/todo/:_id', function(req, res){
         ToDo.deleteOne({_id: req.params._id}, function(err, result){
             if (err){ throw err;}
             else {res.send('Delete Successful');}
