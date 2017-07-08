@@ -11,16 +11,17 @@ var bodyParser = require( 'body-parser' );
 
 var port = process.env.PORT || 8000;
 
-require('./config/passport.js')(passport); // pass passport for configuration
-
 // Middlewares
 app.use("/javascripts", express.static(__dirname + '/client/javascripts'));
 app.use('/views', express.static(__dirname + '/client/views'));
+app.use('/dist', express.static(__dirname + '/node_modules/angular-flash-alert/dist/'));
 app.use(logger('dev'));
 app.use(cookieParser());
 app.use( bodyParser.urlencoded({ extended: true }) );
-
 app.use(session({ secret: config.getSecret() })); // session secret
+app.locals.messages = [];
+
+require('./config/passport.js')(passport); // pass passport for configuration
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 

@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html ng-app="todo-app" lang="en">
+<html ng-app="todoApp" lang="en">
   <head>
     <title>Git 'R' Done</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <script src="https://code.angularjs.org/1.6.4/angular.min.js"></script>
     <script src="https://code.angularjs.org/1.6.4/angular-route.min.js"></script>
+    <script src="dist/angular-flash.js"></script>
+    <script src="javascripts/app.js"></script>
   </head>
   <body>
     <nav class="navbar navbar-default">
@@ -12,14 +14,17 @@
         <ul class="nav navbar-nav navbar-right">
           <li class="dropdown"></li>
           <li class="btn-group btn"><a href="/">Account</a></li>
-          <li class="btn-group btn"><a href="/">Signout</a></li>
+          <li class="btn-group btn"><a href="/logout">Signout</a></li>
         </ul>
       </div>
     </nav>
-    <div class="row">
-      <div ng-view></div>
+    <div class='container'>
+      <div class='row'>
+        <flash-message duration="5000" show-close="true"></flash-message> 
+      </div>
+      <div class="row">
+        <div ng-view></div>
+      </div>
     </div>
-
-    <script src="javascripts/app.js"></script>
   </body>
 </html>

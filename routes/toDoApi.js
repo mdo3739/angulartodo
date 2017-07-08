@@ -1,5 +1,6 @@
 var express = require('express');
 var ToDo = require('../models/toDoModel');
+var bodyParser = require('body-parser');
 var jsonParser = bodyParser.json();
 
 module.exports = function(app, passport){

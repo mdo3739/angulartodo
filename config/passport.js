@@ -22,15 +22,15 @@ module.exports = function(passport){
             if(err) return done(err);
             if(!user){
                 console.log("User not found");
-                return done(null, false);
+                return done(null, false, {message: "User Not Found"});
             }
             if (!user.validPassword(password)){
                 console.log("Wrong Password");
-                return done(null, false);
+                return done(null, false, {message: "Wrong Password"});
             }
 
             // all is well, return successful user
-            return done(null, user);
+            return done(null, user, {message: "Logged In"});
         });
     }));
 }; 
