@@ -34,14 +34,4 @@ module.exports = function(app, passport){
         }
         res.redirect('/');
     });
-
-    // API for flash messages
-    app.get('/messages', function(req, res){
-        res.send(app.locals.messages);
-    });
-
-    app.delete('/messages', function(req, res){
-        flash.splice(0, 1);
-        console.log('Flash Deleted');
-    });
 };

@@ -14,7 +14,22 @@ todoApp.config(function($routeProvider){
     })
 });
 
-todoApp.controller('welcomeController', ['Flash', '$scope', '$http', function(Flash, $scope, $http){
+todoApp.service('userService', function(){
+    var observerCallbacks = [];
+
+    this.registerObserverCallback = function(callback){
+        observerCallbacks.push(callback);
+    };
+
+    this.notifyObservers = function(){
+        angular.forEach(observerCallbacks, function(callback){
+            callback();
+        });
+    };
+});
+
+todoApp.controller('layoutsController', ['Flash', 'userService', '$http', '$scope', '$timeout', 
+                                    function(Flash, userService, $http, $scope, $timeout){
     $http.get('/messages').then(function (data){
     
         var message = data.data[0];
@@ -26,22 +41,27 @@ todoApp.controller('welcomeController', ['Flash', '$scope', '$http', function(Fl
         console.log("Error: " + status);
         console.log(data);
     });
+
+    var updateUser = function(){
+        $scope.user = userService.user;
+    };
+
+    userService.registerObserverCallback(updateUser);
 }]);
 
-todoApp.controller('profileController', ['Flash', '$routeParams', '$scope', '$http', function(Flash, $routeParams, $scope, $http){
-
-    $http.get('/messages').then(function (data){
+todoApp.controller('welcomeController', ['Flash', '$scope', '$http', function(Flash, $scope, $http){
     
-        var message = data.data[0];
-        if(message){
-            Flash.create(message.type, message.message, 5000);
-            $http.delete('/messages').then(function(asdf){
-                console.log('Flash Message Deleted');
-                $http.get('/messages').then(function(res){
-                    console.log(res.data);
-                });
-            });
-        }
+}]);
+
+todoApp.controller('profileController', ['Flash', 'userService', '$routeParams', '$scope', '$http', 
+                                     function(Flash, userService, $routeParams, $scope, $http){
+
+    $http.get('/api/user/' + $routeParams._id ).then(function (data){
+    
+        $scope.user  = data.data;
+        userService.user = data.data;
+        userService.notifyObservers();
+
     }, function(data, status){
         console.log("Error: " + status);
         console.log(data);

@@ -19,7 +19,7 @@ module.exports = function(app, passport){
         
     });
 
-    app.get('api/user/:_id', function(req, res){
+    app.get('/api/user/:_id', function(req, res){
         User.findById(req.params._id, function(err, user){
             if(err){throw err;}
             else {
