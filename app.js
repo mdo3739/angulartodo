@@ -1,3 +1,5 @@
+'use strict'
+
 // Setting variables
 var express = require('express');
 var app = express();

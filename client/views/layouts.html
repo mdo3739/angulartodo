@@ -12,8 +12,8 @@
   <body ng-controller='layoutsController'>
     <nav class="navbar navbar-default navbar-fixed-top" >
       <div class="container-fluid">
+        <a class="navbar-brand" href="#!/{{user._id}}">Welcome {{user.username}}</a>
         <ul class="nav navbar-nav navbar-right" ng-if='user'>
-          <li class='btn-group'>Welcome <a href='#'>{{user.username}}</a></li>
           <li class="btn-group btn"><a href="/">Account</a></li>
           <li class="btn-group btn"><a href="/logout">Signout</a></li>
         </ul>

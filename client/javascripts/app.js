@@ -1,3 +1,5 @@
+'use strict'
+
 var todoApp = angular.module('todoApp', ['ngRoute','ngFlash']);
 
 todoApp.config(function($routeProvider){
@@ -57,7 +59,7 @@ todoApp.controller('welcomeController', ['Flash', '$scope', '$http', function(Fl
 }]);
 
 todoApp.controller('profileController', ['Flash', 'userService', '$routeParams', '$scope', '$http', 
-                                     function(Flash, userService, $routeParams, $scope, $http){
+                                      function(Flash, userService, $routeParams, $scope, $http){
     // Loading User
     $http.get('/api/user/' + $routeParams._id ).then(function (data){
     
@@ -65,10 +67,25 @@ todoApp.controller('profileController', ['Flash', 'userService', '$routeParams',
         userService.user = data.data;
         userService.notifyObservers();
         
-        // Loading User's To-do Items
+        // Loading User's To-do Items////
         $http.get('/api/todos/' + $scope.user._id).then(function(items){
-            $scope.todos = items;
- //           console.log($scope.todos);
+            $scope.todos = [];
+
+            // Loading All To-dos
+            for(var item in items.data){
+                $scope.todos.push(items.data[item]);
+            }
+
+            // Loading Open To-dos
+            $scope.open = $scope.todos.filter(function(todo){
+                return todo.completed === false;
+            });
+
+            // Loading Finished To-dos
+            $scope.done = $scope.todos.filter(function(todo){
+                return todo.completed === true;
+            });
+
         }, function(data, status){
             console.log("Error: " + status);
             console.log(data);
@@ -80,5 +97,21 @@ todoApp.controller('profileController', ['Flash', 'userService', '$routeParams',
         console.log(data);
     });
 
-//    console.log($scope.todos);
+    // If item is checked off, moves item to $scope.done and vice-versa
+    $scope.checked = function(item) {
+        $http.put(`/api/todo/${item._id}`, {completed: (!item.completed)}).then(function(success){
+            item.completed = !item.completed;
+            if(item.completed === true){
+                var index = $scope.open.indexOf(item);
+                $scope.done.push($scope.open.splice(index, 1)[0]);
+            } else if(item.completed === false){
+                var index = $scope.done.indexOf(item);
+                $scope.open.push($scope.done.splice(index, 1)[0]);
+            }
+        }
+        , function(data, status){
+            console.log("Error: " + status);
+            console.log(data);
+        })
+    };
 }]);

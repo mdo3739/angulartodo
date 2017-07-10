@@ -1,3 +1,28 @@
 #main-container{
     margin-top: 6em;
 }
+
+table, th{
+  border: 3px solid #FF6600;
+  text-align: center;
+  width: 700px;
+}
+
+th{
+    background-color:  #FF6600;
+    color: white;
+}
+
+td{
+	border: 1px solid #FF6600;
+  font-family: Arial;
+}
+
+
+.table-striped-custom > tbody > tr:nth-of-type(even) {
+  background-color: #ffe4b2;
+}
+
+#finished-tasks{
+  text-decoration: line-through;
+  text-align: left;
