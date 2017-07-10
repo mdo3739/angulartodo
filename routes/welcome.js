@@ -10,7 +10,7 @@ module.exports = function(app, passport){
     });
 
     app.post('/login', function(req, res, next){
-        passport.authenticate('local', function(err, user, info){
+        passport.authenticate('local-login', function(err, user, info){
             if(err) throw err;
             if(!user){
                 flash.push({type: 'danger', message: info.message});

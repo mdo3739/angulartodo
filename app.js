@@ -12,8 +12,7 @@ var bodyParser = require( 'body-parser' );
 var port = process.env.PORT || 8000;
 
 // Middlewares
-app.use("/javascripts", express.static(__dirname + '/client/javascripts'));
-app.use('/views', express.static(__dirname + '/client/views'));
+app.use("/client", express.static(__dirname + '/client'));
 app.use('/dist', express.static(__dirname + '/node_modules/angular-flash-alert/dist/'));
 app.use(logger('dev'));
 app.use(cookieParser());
@@ -27,9 +26,15 @@ app.use(passport.session()); // persistent login sessions
 
 // Load routes and pass in app and fully configured passport
 require('./routes/flashMessagesApi.js')(app);
-require('./routes/toDoApi.js')(app, passport);
+require('./routes/todoApi.js')(app, passport);
 require('./routes/userApi.js')(app, passport);
 require('./routes/welcome.js')(app, passport);
+
+// Error Handler
+app.use(function errorHandler (err, req, res, next) {
+  res.status(500)
+  res.render('error', { error: err })
+});
 
 // Connecting to database
 mongoose.connect(config.getMongoConnection());

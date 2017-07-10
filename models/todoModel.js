@@ -1,13 +1,13 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var toDoSchema = new Schema({
-    userID: String,
+var todoSchema = new Schema({
+    userId: String,
     todo: String,
     dateCreated: { type: Date, default: Date.now() },
     completed: {type: Boolean, default: false}
 });
 
-var ToDo = mongoose.model('ToDo', toDoSchema);
+var Todo = mongoose.model('Todo', todoSchema);
 
-module.exports = ToDo;
+module.exports = Todo;

@@ -3,22 +3,23 @@
   <head>
     <title>Git 'R' Done</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel='stylesheet' href='client/stylesheets/app.css'>
     <script src="https://code.angularjs.org/1.6.4/angular.min.js"></script>
     <script src="https://code.angularjs.org/1.6.4/angular-route.min.js"></script>
     <script src="dist/angular-flash.js"></script>
-    <script src="javascripts/app.js"></script>
+    <script src="client/javascripts/app.js"></script>
   </head>
   <body ng-controller='layoutsController'>
-    <nav class="navbar navbar-default" ng-if='user'>
+    <nav class="navbar navbar-default navbar-fixed-top" >
       <div class="container-fluid">
-        <ul class="nav navbar-nav navbar-right">
-          <li class="dropdown"></li>
+        <ul class="nav navbar-nav navbar-right" ng-if='user'>
+          <li class='btn-group'>Welcome <a href='#'>{{user.username}}</a></li>
           <li class="btn-group btn"><a href="/">Account</a></li>
           <li class="btn-group btn"><a href="/logout">Signout</a></li>
         </ul>
       </div>
     </nav>
-    <div class='container'>
+    <div class='container' id='main-container'>
       <div class='row'>
         <flash-message duration="5000" show-close="true"></flash-message> 
       </div>

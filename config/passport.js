@@ -12,7 +12,30 @@ module.exports = function(passport){
         });
     });
 
-    passport.use('local', new LocalStrategy({
+    passport.use('local-signup', new LocalStrategy({
+        usernameField: 'email',
+        passwordField: 'password',
+        passReqToCallback: true
+    },
+    function(req, email, password, done){
+
+            User.findOne({'email': email.toUpperCase()}, function(err, user){
+                if(err) return done(err);
+                if(user){
+                    return done(null, false, {message: "You already have an account!"});
+                } else{
+                    var newUser = new User();
+                    newUser.email = email.toUpperCase();
+                    newUser.password = newUser.generateHash(password);
+                    newUser.save(function(err){
+                        if(err) throw err;
+                        return done(null, newUser, {message: 'Account Created'});
+                    });
+                }
+            });
+    }));
+
+    passport.use('local-login', new LocalStrategy({
         usernameField: 'email',
         passwordField: 'password',
         passReqToCallback: true
