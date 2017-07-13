@@ -5,7 +5,6 @@ var jsonParser = bodyParser.json();
 
 module.exports = function(app, passport){
     app.get('/api/todos/:userId', function(req, res){
-        console.log(req.params.userId);
         Todo.find({userId: req.params.userId}, function(err, todos) {
             res.send(todos.reduce(function(todoMap, item) {
                 todoMap[item.id] = item;
@@ -15,16 +14,22 @@ module.exports = function(app, passport){
     });
 
     app.post('/api/todo', jsonParser, function(req, res){
-        var newTodo = Todo({
-            userID: req.body.userID,
+
+        var newTodo = new Todo({
+            userId: req.user._id,
             todo: req.body.todo,
             dateCreated: Date.now(),
             completed: false
         });
+        console.log(newTodo);
         newTodo.save(function(err){
             if(err) {throw err;}
-            else {res.send("Save Successful");}
+            else {
+                console.log('To-do Added');
+                res.send(newTodo)
+            }
         });
+
     });
 
     app.put('/api/todo/:_id', jsonParser, function(req, res){
@@ -33,7 +38,8 @@ module.exports = function(app, passport){
         Todo.findById(thisOne, function(err, item){
             if (err) throw err;
             else {
-                console.log(item._id);
+                console.log(item);
+                console.log(req.body);
                 item.todo = req.body.todo || item.todo;
                 switch(req.body.completed){
                     case true:
@@ -49,10 +55,6 @@ module.exports = function(app, passport){
                 });
             }
         });
-    });
-
-    app.put('api/todo/completed/:_id', function(req, res){
-        
     });
 
     app.delete('/api/todo/:_id', function(req, res){

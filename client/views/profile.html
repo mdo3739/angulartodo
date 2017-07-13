@@ -1,23 +1,49 @@
 <div class='row'><h1>Let's Get to Work!</h1></div>
+
+<!-- Open Tasks Table -->
 <div class='row'>
     <div class='col-xs-12 col-md-10 col-md-offset-1'>
         <table class="table table-striped-custom">
 			<theader>
-				<th width='20%'>Time Left</th>
-				<th width='70%'>Task</th>
-				<th width='10%'>Finished?</th>
+				<th class='col-xs-2'>Time Left</th>
+				<th class='col-xs-8'>Task</th>
+				<th class='col-xs-2'>Finished?</th>
+                <th 
 			</theader>
 			<tbody id='open-tasks'>
-				<tr id="{{item._id}}" ng-repeat='item in open track by item._id'>
+				<tr ng-repeat='item in open track by item._id'>
                     <td>#</td>
-                    <td>{{item.todo}}</td>
+                    <td>
+                        <div class='row' id='s{{item._id}}'>
+                            <div class='col-xs-8' id='t{{item._id}}'>{{item.todo}}</div>
+                            <div class='col-xs-1'><button class='btn btn-primary' ng-click='editTodo(item)'>Edit</button></div>
+                            <div class='col-xs-1 col-xs-offset-1'><button class='btn btn-primary' ng-click='deleteTodo(item)'>Delete</button></div>
+                        </div>
+                        <div class='row hidden' id='e{{item._id}}' >
+                            <div class='col-xs-8'><input type='text' ng-model='editTodo.text' /></div>
+                            <div class='col-xs-1'><button class='btn btn-primary' ng-click='saveTodo(item)'>Save</button></div>
+                        </div>
+                    </td>
                     <td>
                         <input type="checkbox" ng-click="checked(item)" />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan='3'>
+                        <form ng-submit='addTodo(this)'>
+                            <div class='col-xs-6 col-xs-offset-2'>
+                                <input name='todo' type='text' class='form-control' placeholder="More Stuff To Do?" ng-model='addTodoText'/>
+                            </div>
+                            <div class='col-xs-2'>
+                                <input type='submit' class='btn btn-primary' value='Add'/>
+                            </div>
+                        </form>
                     </td>
                 </tr>
 			</tbody>
 		</table>
 
+<!-- Finished Tasks Table -->
         <div class='row'>
             <div class='col-xs-12 col-md-10 col-md-offset-1' id='finished-table'>
                 <table class='table'>
@@ -25,7 +51,10 @@
                     <tbody id='finished-tasks'>
                         <tr id="{{item._id}}" ng-repeat='item in done track by item._id'>
                             <td col-span="2"><li>{{item.todo}}</li></td>
-	                        <td><button class='btn btn-primary' ng-click="checked(item)">Undo</a></td>
+	                        <td>
+                                <button class='btn btn-primary' ng-click="checked(item)">Undo</button>
+                                <button class='btn btn-primary' ng-click='deleteTodo(item)'>Delete</button>
+                            </td>
                         </tr>
                     </tbody>
                 </table>

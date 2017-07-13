@@ -52,6 +52,5 @@ module.exports = function(app, passport){
             newUser.save();
         }
     };
-    console.log('userapi');
     //seedUsers();
 };
