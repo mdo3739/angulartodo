@@ -1,6 +1,6 @@
 'use strict'
 
-var todoApp = angular.module('todoApp', ['ngRoute','ngFlash', 'ui.bootstrap', 'ngSanitize']);
+var todoApp = angular.module('todoApp', ['ngRoute','ngFlash', 'ngSanitize']);
 
 todoApp.config(function($routeProvider){
 
@@ -13,6 +13,10 @@ todoApp.config(function($routeProvider){
     .when('/:_id', {
         templateUrl: 'client/views/profile.html',
         controller: 'profileController'
+    })
+    .when('/account/:_id', {
+        templateUrl: 'client/views/account.html',
+        controller: 'accountController'
     })
 });
 
@@ -124,7 +128,18 @@ todoApp.controller('profileController', ['Flash', 'sharingService', '$routeParam
     }
 
     // Deletes items
+    $scope.areYouSure = function(item) {
+        alert = $mdDialog.alert({
+            title: 'Attention',
+            textContent: 'This is an example of how easy dialogs can be!',
+            ok: 'Close'
+        });
+    };
+
     $scope.deleteTodo = function(item){
+        if(!confirm("Are you sure you want to delete?")){
+            return;    
+        }
         $http.delete(`/api/todo/${item._id}`).then(function(data){
             var list = whichList(item.completed);
             delete $scope[list[1]][item._id];
@@ -133,51 +148,59 @@ todoApp.controller('profileController', ['Flash', 'sharingService', '$routeParam
 
     // Edit Items
     $scope.editObject = {
-        text: ''
+        text: '',
+        _id: ''
     };
 
+    function toggleShow(doWhat, id){
+        switch(doWhat){
+            case "editShow":
+                var original = angular.element( document.querySelector( '#show'+id ) );
+                original.addClass('hidden');
+        
+                var editBox = angular.element(document.querySelector('#edit'+id));
+                editBox.removeClass('hidden');
+                break;
+            case "editHide":
+                var original = angular.element( document.querySelector( '#show'+id ) );
+                original.removeClass('hidden');
+
+                var editBox = angular.element(document.querySelector('#edit'+id));
+                editBox.addClass('hidden');
+                break;
+        }
+    }
+
     $scope.editTodo = function(item){
+        var oldOne = $scope.editObject._id;
+        if(oldOne){
+            toggleShow("editHide", oldOne);
+        }
         
-        
-/*        if($scope.editTodo.text){
-            for (var id in $scope.open) {
-
-                if($scope.open[id].todo === $scope.editObject.text){
-                    var me = $scope.open[id];
-                }
-            }
-            console.log(me);
-
-            $scope.saveTodo($scope.open.find(function(element){
-                return element.todo === $scope.editTodo.text;
-            }));
-        }*/
-
         $scope.editObject.text = item.todo;
-        var original = angular.element( document.querySelector( '#show'+item._id ) );
-        original.addClass('hidden');
- 
-        var editBox = angular.element(document.querySelector('#edit'+item._id));
-        editBox.removeClass('hidden');
+        $scope.editObject._id = item._id;
+        toggleShow("editShow", item._id);
     };
 
     $scope.saveTodo = function(item){
-        console.log(item._id);
-        $http.put('/api/todo/'+item._id, {todo: $scope.editObject.text}).then(function(data){
+        var newText = $scope.editObject.text;
+        
+        $http.put('/api/todo/'+item._id, {todo: newText}).then(function(data){
             
-            $scope.open[item._id].todo = $scope.editObject.text;
+            $scope.open[item._id].todo = newText;
  
-            var original = angular.element( document.querySelector( '#show'+item._id ) );
-            original.removeClass('hidden');
-
-            var editBox = angular.element(document.querySelector('#edit'+item._id));
-            editBox.addClass('hidden');
-          //  $scope.editObject.text = '';
+            toggleShow("editHide", item._id);
         }, sharingService.errorHandler);
     };
 }]);
 
-app.directive('ngEnter', function() {
+todoApp.controller('accountController', [function(){
+
+    
+
+}]);
+
+todoApp.directive('ngEnter', function() {
         return function(scope, element, attrs) {
             element.bind("keydown keypress", function(event) {
                 if(event.which === 13) {

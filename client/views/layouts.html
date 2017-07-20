@@ -9,9 +9,9 @@
   <body ng-controller='layoutsController'>
     <nav class="navbar navbar-default navbar-fixed-top" >
       <div class="container-fluid">
-        <a class="navbar-brand" href="#!/{{user._id}}">Welcome {{user.username}}</a>
+        <a class="navbar-brand" href="/#!/{{user._id}}">Welcome {{user.username}}</a>
         <ul class="nav navbar-nav navbar-right" ng-if='user'>
-          <li class="btn-group btn"><a href="/">Account</a></li>
+          <li class="btn-group btn"><a href="/#!/account/{{user._id}}">Account</a></li>
           <li class="btn-group btn"><a href="/logout">Signout</a></li>
         </ul>
       </div>
@@ -28,7 +28,6 @@
     <script src="https://code.angularjs.org/1.6.4/angular.min.js"></script>
     <script src="https://code.angularjs.org/1.6.4/angular-route.min.js"></script>
     <script src="https://code.angularjs.org/1.6.4/angular-sanitize.min.js"></script>
-    <script src='http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.5.0.js'></script>
     <script src="dist/angular-flash.js"></script>
     <script src="client/javascripts/app.js"></script>
   </body>
