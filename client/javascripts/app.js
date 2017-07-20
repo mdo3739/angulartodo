@@ -132,24 +132,61 @@ todoApp.controller('profileController', ['Flash', 'sharingService', '$routeParam
     };
 
     // Edit Items
-    $scope.editPopover = {
-        templateUrl: 'client/views/editPopoverTemplate.html',
-        content: 'Edit',
-        isOpen: false
+    $scope.editObject = {
+        text: ''
     };
 
     $scope.editTodo = function(item){
-        $scope.editPopover.content = item.todo;
-        $scope.editPopover.isOpen = true;
-        console.log('Hello');
+        
+        
+/*        if($scope.editTodo.text){
+            for (var id in $scope.open) {
+
+                if($scope.open[id].todo === $scope.editObject.text){
+                    var me = $scope.open[id];
+                }
+            }
+            console.log(me);
+
+            $scope.saveTodo($scope.open.find(function(element){
+                return element.todo === $scope.editTodo.text;
+            }));
+        }*/
+
+        $scope.editObject.text = item.todo;
+        var original = angular.element( document.querySelector( '#show'+item._id ) );
+        original.addClass('hidden');
+ 
+        var editBox = angular.element(document.querySelector('#edit'+item._id));
+        editBox.removeClass('hidden');
     };
 
     $scope.saveTodo = function(item){
-        $http.put('api/todo/' + item._id, {todo: $scope.editPopover.content}).then(function(data){
-            $scope.open[item._id].todo = $scope.editPopover.content;
+        console.log(item._id);
+        $http.put('/api/todo/'+item._id, {todo: $scope.editObject.text}).then(function(data){
             
-            $scope.editPopover.isOpen = false;
-            console.log($scope.editPopover.isOpen);
+            $scope.open[item._id].todo = $scope.editObject.text;
+ 
+            var original = angular.element( document.querySelector( '#show'+item._id ) );
+            original.removeClass('hidden');
+
+            var editBox = angular.element(document.querySelector('#edit'+item._id));
+            editBox.addClass('hidden');
+          //  $scope.editObject.text = '';
         }, sharingService.errorHandler);
     };
 }]);
+
+app.directive('ngEnter', function() {
+        return function(scope, element, attrs) {
+            element.bind("keydown keypress", function(event) {
+                if(event.which === 13) {
+                        scope.$apply(function(){
+                                scope.$eval(attrs.ngEnter);
+                        });
+                        
+                        event.preventDefault();
+                }
+            });
+        };
+});

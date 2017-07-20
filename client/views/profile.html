@@ -14,12 +14,20 @@
 				<tr ng-repeat='item in open track by item._id'>
                     <td>#</td>
                     <td>
-                        <div class='row'>
-                            <div class='col-xs-8'>{{item.todo}}</div>
-                            <div class='col-xs-1'>      
-                                <button popover-is-open="editPopover.isOpen" popover-trigger="'outsideClick'" uib-popover-template="editPopover.templateUrl" class="btn btn-primary" popover-placement='left' ng-click='editTodo(item)'>Edit</button>                     
-                            </div>
+                        <div class='row' id='show{{item._id}}' ng-class='{hidden: show}'>
+                            <div class='col-xs-8' id='t{{item._id}}'>{{item.todo}}</div>
+                            <div class='col-xs-1'><button class='btn btn-primary' ng-click='editTodo(item)'>Edit</button></div>
                             <div class='col-xs-1 col-xs-offset-1'><button class='btn btn-primary' ng-click='deleteTodo(item)'>Delete</button></div>
+                        </div>
+                        <div class='row hidden' id='edit{{item._id}}' >
+                            <div class='col-xs-9'>
+                                <form id='editForm'>
+                                    <input ng-enter='saveTodo(item)' size='50%' type='text' ng-model='editObject.text' />                                   
+                                </form>
+                            </div>
+                            <div class='col-xs-1'>
+                                <button class='btn btn-primary' ng-click='saveTodo(item)'>Save</button>
+                            </div>
                         </div>
                     </td>
                     <td>
