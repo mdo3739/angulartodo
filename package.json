@@ -2,7 +2,7 @@
   "name": "angulartodo",
   "version": "1.0.0",
   "description": "A to-do list using angular. This is only for practice",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
