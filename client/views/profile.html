@@ -14,14 +14,12 @@
 				<tr ng-repeat='item in open track by item._id'>
                     <td>#</td>
                     <td>
-                        <div class='row' id='s{{item._id}}'>
-                            <div class='col-xs-8' id='t{{item._id}}'>{{item.todo}}</div>
-                            <div class='col-xs-1'><button class='btn btn-primary' ng-click='editTodo(item)'>Edit</button></div>
+                        <div class='row'>
+                            <div class='col-xs-8'>{{item.todo}}</div>
+                            <div class='col-xs-1'>      
+                                <button popover-is-open="editPopover.isOpen" popover-trigger="'outsideClick'" uib-popover-template="editPopover.templateUrl" class="btn btn-primary" popover-placement='left' ng-click='editTodo(item)'>Edit</button>                     
+                            </div>
                             <div class='col-xs-1 col-xs-offset-1'><button class='btn btn-primary' ng-click='deleteTodo(item)'>Delete</button></div>
-                        </div>
-                        <div class='row hidden' id='e{{item._id}}' >
-                            <div class='col-xs-8'><input type='text' ng-model='editTodo.text' /></div>
-                            <div class='col-xs-1'><button class='btn btn-primary' ng-click='saveTodo(item)'>Save</button></div>
                         </div>
                     </td>
                     <td>
@@ -30,7 +28,7 @@
                 </tr>
                 <tr>
                     <td colspan='3'>
-                        <form ng-submit='addTodo(this)'>
+                        <form ng-submit='addTodo()'>
                             <div class='col-xs-6 col-xs-offset-2'>
                                 <input name='todo' type='text' class='form-control' placeholder="More Stuff To Do?" ng-model='addTodoText'/>
                             </div>

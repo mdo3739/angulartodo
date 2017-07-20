@@ -1,6 +1,6 @@
 'use strict'
 
-var todoApp = angular.module('todoApp', ['ngRoute','ngFlash']);
+var todoApp = angular.module('todoApp', ['ngRoute','ngFlash', 'ui.bootstrap', 'ngSanitize']);
 
 todoApp.config(function($routeProvider){
 
@@ -50,7 +50,6 @@ todoApp.controller('layoutsController', ['Flash', 'sharingService', '$http', '$s
         }
     }, sharingService.errorHandler);
 
-    console.log()
     var updateUser = function(){
         $scope.user = sharingService.user;
     };
@@ -62,8 +61,25 @@ todoApp.controller('welcomeController', ['Flash', '$scope', '$http', function(Fl
     
 }]);
 
-todoApp.controller('profileController', ['Flash', 'sharingService', '$routeParams', '$scope', '$http', 
+todoApp.controller('profileController', ['Flash', 'sharingService', '$routeParams', '$scope', '$http',
                                       function(Flash, sharingService, $routeParams, $scope, $http){
+
+    function filter(obj, condition) {
+        var result = {};
+        var key = Object.keys(condition)[0]
+        for(var item in obj){
+            if(condition[key] === obj[item][key]){
+                result[item] = obj[item];
+            }
+        }
+        return result;
+    };
+
+    function whichList(boolean){
+        if(boolean) return ['open', 'done'];
+        else return ['done', 'open'];
+    }
+
     // Loading User
     $http.get('/api/user/' + $routeParams._id ).then(function (data){
     
@@ -73,22 +89,13 @@ todoApp.controller('profileController', ['Flash', 'sharingService', '$routeParam
         
         // Loading User's To-do Items////
         $http.get('/api/todos/' + $scope.user._id).then(function(items){
-            $scope.todos = [];
-
-            // Loading All To-dos
-            for(var item in items.data){
-                $scope.todos.push(items.data[item]);
-            }
-
+            $scope.todos = items.data;
+  
             // Loading Open To-dos
-            $scope.open = $scope.todos.filter(function(todo){
-                return todo.completed === false;
-            });
-
+            $scope.open = filter($scope.todos, {completed: false});
+            
             // Loading Finished To-dos
-            $scope.done = $scope.todos.filter(function(todo){
-                return todo.completed === true;
-            });
+            $scope.done = filter($scope.todos, {completed: true});
 
         }, sharingService.errorHandler);
         ////////////////////////////////
@@ -98,59 +105,51 @@ todoApp.controller('profileController', ['Flash', 'sharingService', '$routeParam
     // If item is checked off, moves item to $scope.done and vice-versa
     $scope.checked = function(item) {
         $http.put(`/api/todo/${item._id}`, {completed: (!item.completed)}).then(function(success){
-            item.completed = !item.completed;
-            if(item.completed === true){
-                var index = $scope.open.indexOf(item);
-                $scope.done.push($scope.open.splice(index, 1)[0]);
-            } else if(item.completed === false){
-                var index = $scope.done.indexOf(item);
-                $scope.open.push($scope.done.splice(index, 1)[0]);
-            }
+
+            // If item.completed === false, I would need to delete item from $scope.open and add it to $scope.done
+            // whichList allows me to do this, plus vice versa
+            var list = whichList(item.completed);
+            $scope[list[0]][item._id] = $scope[list[1]][item._id];
+            delete $scope[list[1]][item._id];
+        $scope[list[0]][item._id].completed = !item.completed;
         }, sharingService.errorHandler);
     };
 
     // Adds New Items
-    $scope.addTodo = function(form){
+    $scope.addTodo = function(){
         $http.post('api/todo', {todo: $scope.addTodoText}).then(function(item){
-            $scope.open.push(item.data);
+            $scope.open[item.data._id] = item.data;
             $scope.addTodoText = '';
         }, sharingService.errorHandler);
     }
 
     // Deletes items
     $scope.deleteTodo = function(item){
-        var index = $scope.done.indexOf(item);
         $http.delete(`/api/todo/${item._id}`).then(function(data){
-            $scope.done.splice(index, 1);
+            var list = whichList(item.completed);
+            delete $scope[list[1]][item._id];
         }, sharingService.errorHandler);
     };
 
     // Edit Items
-    $scope.editTodo = function(item){
-        if($scope.editTodo.text){
-            $scope.saveTodo($scope.open.find(function(element){
-                return element.todo === $scope.editTodo.text;
-            }));
-        }
-        $scope.editTodo = {text: item.todo};
-        var original = angular.element( document.querySelector( '#s'+item._id ) );
-        original.addClass('hidden');
+    $scope.editPopover = {
+        templateUrl: 'client/views/editPopoverTemplate.html',
+        content: 'Edit',
+        isOpen: false
+    };
 
-        var editBox = angular.element(document.querySelector('#e'+item._id));
-        editBox.removeClass('hidden');
+    $scope.editTodo = function(item){
+        $scope.editPopover.content = item.todo;
+        $scope.editPopover.isOpen = true;
+        console.log('Hello');
     };
 
     $scope.saveTodo = function(item){
-        $http.put('/api/todo/'+item._id, {todo: $scope.editTodo.text}).then(function(data){
-            var index = $scope.open.indexOf(item);
-            console.log($scope.open[index]);
-            $scope.open[index].todo = $scope.editTodo.text;
-            console.log($scope.open[index]);
-            var original = angular.element( document.querySelector( '#s'+item._id ) );
-            original.removeClass('hidden');
-
-            var editBox = angular.element(document.querySelector('#e'+item._id));
-            editBox.addClass('hidden');
-        }, sharingService.errorHandler );
+        $http.put('api/todo/' + item._id, {todo: $scope.editPopover.content}).then(function(data){
+            $scope.open[item._id].todo = $scope.editPopover.content;
+            
+            $scope.editPopover.isOpen = false;
+            console.log($scope.editPopover.isOpen);
+        }, sharingService.errorHandler);
     };
 }]);

@@ -38,8 +38,6 @@ module.exports = function(app, passport){
         Todo.findById(thisOne, function(err, item){
             if (err) throw err;
             else {
-                console.log(item);
-                console.log(req.body);
                 item.todo = req.body.todo || item.todo;
                 switch(req.body.completed){
                     case true:
@@ -63,25 +61,4 @@ module.exports = function(app, passport){
             else {res.send('Delete Successful');}
         });
     });
-
-    var seedTodos = function(){
-        var items = [
-            {userId: '5958472396bc514604b96ca2', todo: 'Wash car'},
-            {userId: '5958472396bc514604b96ca2', todo: 'Finish project'},
-            {userId: '5958472396bc514604b96ca2', todo: 'Get Rich'},
-            {userId: '5961679bf751e920bc6ab5cb', todo: 'Fuck Hoes'},
-            {userId: '5961679bf751e920bc6ab5cb', todo: 'Ball out'},
-            {userId: '5961679bf751e920bc6ab5cb', todo: 'Sleep'},
-            {userId: '5961679bf751e920bc6ab5cc', todo: 'Clean Room'},
-            {userId: '5961679bf751e920bc6ab5cc', todo: 'Do Laundry'},
-            {userId: '5961679bf751e920bc6ab5cc', todo: 'Relax'}
-        ];
-
-        for(var l = 0; l < items.length; l++){
-            var newTodo = new Todo(items[l]);
-            newTodo.save();
-        }
-    };
-
-    //seedTodos();
 };

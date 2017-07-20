@@ -39,18 +39,4 @@ module.exports = function(app, passport){
             res.send(todos);
         });
     });
-
-    var seedUsers = function(){
-        var users = [
-            {email: 'mdo3103@ymail.com', password: 'asdf', username: 'McDeezy', admin: false},
-            {email: 'mdo3739@gmail.com', password: 'booyah', username: 'Big Mike', admin: true},
-            {email: 'crazidoughboi@yahoo.com', password: 'boom', username: 'McDizzle', admin: false}
-        ];
-
-        for(var i = 0; i < users.length; i++){
-            var newUser = new User(users[i]);
-            newUser.save();
-        }
-    };
-    //seedUsers();
 };
