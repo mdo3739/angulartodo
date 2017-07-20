@@ -6,7 +6,7 @@ var app = express();
 var config = require('./config/configGetter.js');
 var mongoose = require('mongoose');
 var logger = require('morgan');
-var cookieParser = require('cookie-parser');
+
 var session = require('express-session');
 var passport = require('passport');
 var bodyParser = require( 'body-parser' );
@@ -17,9 +17,15 @@ var port = process.env.PORT || 8000;
 app.use("/client", express.static(__dirname + '/client'));
 app.use('/dist', express.static(__dirname + '/node_modules/angular-flash-alert/dist/'));
 app.use(logger('dev'));
-app.use(cookieParser());
 app.use( bodyParser.urlencoded({ extended: true }) );
-app.use(session({ secret: config.getSecret() })); // session secret
+app.use(function(){
+  req.session.destroy();
+});
+app.use(session({
+  secret: config.getSecret(),
+  resave: true,
+  saveUninitialized: true 
+}));
 app.locals.messages = [];
 
 require('./config/passport.js')(passport); // pass passport for configuration

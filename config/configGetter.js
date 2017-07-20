@@ -1,9 +1,11 @@
-var variables = require('./envVariables.json');
+var variables = require('./devVariables.json');
 
 module.exports = {
     getMongoConnection: function(){
-        return `mongodb://${variables.mongoUserName}:${variables.mongoPwd}@ds155961.mlab.com:55961/angulartodo`
+        return process.env.PROD_MONGODB || variables.db
     },
-    getSecret: function(){ return variables.secret;},
+    getSecret: function(){ 
+        return process.env.SECRET || variables.secret ;
+    },
     getCookieSecret: function(){return variables.cookieSecret;}
-}
+};
