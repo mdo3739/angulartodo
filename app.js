@@ -45,7 +45,7 @@ app.use(function errorHandler (err, req, res, next) {
 });
 
 // Connecting to database
-mongoose.connect(config.getMongoConnection());
+mongoose.connect(config.getMongoConnection(), {useMongoClient: true});
 var connection = mongoose.connection;
 connection.on('error', console.error.bind(console, 'Could not connect to database'));
 connection.once('open', function(){
