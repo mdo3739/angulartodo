@@ -6,21 +6,25 @@ var app = express();
 var config = require('./config/configGetter.js');
 var mongoose = require('mongoose');
 var logger = require('morgan');
-var session = require('express-session');
+var cookieParser = require('cookie-parser');
 var passport = require('passport');
 var bodyParser = require( 'body-parser' );
+var cookieSession = require('cookie-session')
 
 var port = process.env.PORT || 8000;
 
 // Middlewares
+
 app.use("/client", express.static(__dirname + '/client'));
 app.use('/dist', express.static(__dirname + '/node_modules/angular-flash-alert/dist/'));
 app.use(logger('dev'));
 app.use( bodyParser.urlencoded({ extended: true }) );
-app.use(session({
+app.use(cookieSession({
+  name: 'cookieSession',
   secret: config.getSecret(),
-  resave: true,
-  saveUninitialized: true 
+ 
+  // Cookie Options 
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours 
 }));
 app.locals.messages = [];
 
@@ -36,8 +40,8 @@ require('./routes/welcome.js')(app, passport);
 
 // Error Handler
 app.use(function errorHandler (err, req, res, next) {
-  res.status(500)
-  res.render('error', { error: err })
+  res.status(500);
+  res.json({ error: err });
 });
 
 // Connecting to database
