@@ -1,13 +1,15 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var bcrypt   = require('bcrypt-nodejs');
+var crypto = require('crypto');
 
 var userSchema = new Schema({
   email: String,
   password: String,
   username: String,
   memberSince: {type: Date, default: Date.now()},
-  admin: {type:Boolean, default: false}
+  admin: {type:Boolean, default: false},
+  role: {type: String, default: "unverified"}
 });
 
 userSchema.methods.generateHash = function(password) {

@@ -1,6 +1,5 @@
-var express = require('express');
 var User = require('../models/userModel');
-var config = require('../config/configGetter');
+var crypto = require('crypto');
 
 module.exports = function(app, passport){
     var flash = app.locals.messages;
@@ -14,11 +13,16 @@ module.exports = function(app, passport){
                 user.username = req.body.username;
                 user.memberSince = Date.now();
                 user.save(function(err){
-                    if(err) throw err;
-                    else{ console.log("Save Successful");}
+                    if(err){
+                        flash.push({type: 'danger', message: "Something went wrong! Please try again"});
+                        res.redirect('/');
+                    }
+                    else{
+                        console.log("Save Successful");
+                        flash.push({type: 'success', message: info.message});
+                    }
                 })
                 
-                flash.push({type: 'success', message: info.message});
                 return res.redirect('/#!/' + user._id);
             }
         })(req, res, next);
@@ -37,6 +41,16 @@ module.exports = function(app, passport){
         User.find({}, function(err, todos) {
             if(err) throw err;
             res.send(todos);
+        });
+    });
+
+    app.delete('api/user/:_id', function(req, res){
+        User.findByIdAndRemove(req.params._id, function(err, user){
+            if(err) throw err;
+            else{
+                flash.push({type: 'success', message: 'Account Deleted'});
+                res.redirect('/');
+            }
         });
     });
 };

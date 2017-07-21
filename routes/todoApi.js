@@ -21,7 +21,7 @@ module.exports = function(app, passport){
             dateCreated: Date.now(),
             completed: false
         });
-        console.log(newTodo);
+
         newTodo.save(function(err){
             if(err) {throw err;}
             else {

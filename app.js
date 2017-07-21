@@ -3,29 +3,32 @@
 // Setting variables
 var express = require('express');
 var app = express();
-var config = require('./config/configGetter.js');
 var mongoose = require('mongoose');
-var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var passport = require('passport');
 var bodyParser = require( 'body-parser' );
-var cookieSession = require('cookie-session')
+var cookieSession = require('cookie-session');
 
-var port = process.env.PORT || 8000;
+// Config settings depending on environment
+var env = process.env.NODE_ENV || 'development';
+if(env === 'development'){
+	require('./config/devConfig.js')(app);
+} else if(env === 'production'){
+	app.use(cookieSession({
+	  name: 'cookieSession',
+	  secret: process.env.SECRET,
+	 
+	  // Cookie Options
+	  maxAge: 24 * 60 * 60 * 1000, // 24 hours 
+	  secure: true
+	}));
+}
 
+require('./routes/nodemailerApi.js')();
 // Middlewares
-
 app.use("/client", express.static(__dirname + '/client'));
 app.use('/dist', express.static(__dirname + '/node_modules/angular-flash-alert/dist/'));
-app.use(logger('dev'));
 app.use( bodyParser.urlencoded({ extended: true }) );
-app.use(cookieSession({
-  name: 'cookieSession',
-  secret: config.getSecret(),
- 
-  // Cookie Options 
-  maxAge: 24 * 60 * 60 * 1000 // 24 hours 
-}));
 app.locals.messages = [];
 
 require('./config/passport.js')(passport); // pass passport for configuration
@@ -45,11 +48,11 @@ app.use(function errorHandler (err, req, res, next) {
 });
 
 // Connecting to database
-mongoose.connect(config.getMongoConnection(), {useMongoClient: true});
+mongoose.connect(process.env.MONGODB, {useMongoClient: true});
 var connection = mongoose.connection;
 connection.on('error', console.error.bind(console, 'Could not connect to database'));
 connection.once('open', function(){
     console.log('Connection successful!');
 });
 
-app.listen(port);
+app.listen(process.env.PORT);

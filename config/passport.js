@@ -29,7 +29,7 @@ module.exports = function(passport){
                     newUser.password = newUser.generateHash(password);
                     newUser.save(function(err){
                         if(err) throw err;
-                        return done(null, newUser, {message: 'Account Created'});
+                        return done(null, newUser, {message: 'Account Created. Please confirm you email'});
                     });
                 }
             });
