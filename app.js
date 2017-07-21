@@ -6,7 +6,6 @@ var app = express();
 var config = require('./config/configGetter.js');
 var mongoose = require('mongoose');
 var logger = require('morgan');
-
 var session = require('express-session');
 var passport = require('passport');
 var bodyParser = require( 'body-parser' );
@@ -18,9 +17,6 @@ app.use("/client", express.static(__dirname + '/client'));
 app.use('/dist', express.static(__dirname + '/node_modules/angular-flash-alert/dist/'));
 app.use(logger('dev'));
 app.use( bodyParser.urlencoded({ extended: true }) );
-app.use(function(){
-  req.session.destroy();
-});
 app.use(session({
   secret: config.getSecret(),
   resave: true,
