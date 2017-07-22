@@ -1,5 +1,6 @@
 var User = require('../models/userModel');
 var crypto = require('crypto');
+var Todo = require('../models/todoModel');
 
 module.exports = function(app, passport){
     var flash = app.locals.messages;
@@ -35,19 +36,23 @@ module.exports = function(app, passport){
                 res.send(user);
             }
         });
-    });
-
-    app.get('api/users', function(req, res){
-        User.find({}, function(err, todos) {
-            if(err) throw err;
-            res.send(todos);
+        Todo.find({userId: req.params._id}, function(err, list){
+            for(let c = 0; c < list.length; c++){
+                console.log(list[c]._id);
+            }
         });
+
     });
 
-    app.delete('api/user/:_id', function(req, res){
+    app.post('/api/user/:_id', function(req, res){
+
         User.findByIdAndRemove(req.params._id, function(err, user){
             if(err) throw err;
             else{
+                Todo.remove({userId: req.params._id}, function(err, numRemoved){
+                    if(err) throw err;
+                    else console.log(numRemoved +" items Deleted");
+                });
                 flash.push({type: 'success', message: 'Account Deleted'});
                 res.redirect('/');
             }

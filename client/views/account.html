@@ -17,5 +17,7 @@
     <h3>Change Username</h3>
 
     <h3>Close Account</h3>
-    <button ng-click="deleteUser()" class='btn btn-danger'>Delete</button>
+    <form method="post" action='{{"/api/user/" + id}}'>
+        <input type='submit' class='btn btn-danger' value='Delete' />
+    </form>
 </div>

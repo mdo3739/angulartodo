@@ -194,13 +194,10 @@ todoApp.controller('profileController', ['Flash', 'sharingService', '$routeParam
     };
 }]);
 
-todoApp.controller('accountController', ['sharingService', '$scope', '$routeParams', '$http', function(sharingService, $scope, $routeParams, $http){
+todoApp.controller('accountController', ['sharingService', '$scope', '$routeParams', '$http', 
+                                    function(sharingService, $scope, $routeParams, $http){
 
-    $scope.deleteUser = function(){
-        $http.delete('/api/user/' + $routeParams._id).then(function(data){
-
-        }, sharingService.errorHandler);
-    };
+    $scope.id = $routeParams._id;
 
 }]);
 
