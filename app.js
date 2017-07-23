@@ -8,6 +8,7 @@ var cookieParser = require('cookie-parser');
 var passport = require('passport');
 var bodyParser = require( 'body-parser' );
 var cookieSession = require('cookie-session');
+var authorization = require('./middleware/authorization.js');
 
 // Config settings depending on environment
 var env = process.env.NODE_ENV || 'development';
@@ -30,6 +31,7 @@ app.use("/client", express.static(__dirname + '/client'));
 app.use('/dist', express.static(__dirname + '/node_modules/angular-flash-alert/dist/'));
 app.use( bodyParser.urlencoded({ extended: true }) );
 app.locals.messages = [];
+app.use('/api', authorization);
 
 require('./config/passport.js')(passport); // pass passport for configuration
 app.use(passport.initialize());

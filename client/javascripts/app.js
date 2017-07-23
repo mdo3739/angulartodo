@@ -20,7 +20,7 @@ todoApp.config(function($routeProvider){
     })
 });
 
-todoApp.service('sharingService', function(){
+todoApp.service('sharingService', [ '$routeParams','$location', function($routeParams,$location){
     
     // Loads user after logging in to update Navbar
     var observerCallbacks = [];
@@ -37,12 +37,14 @@ todoApp.service('sharingService', function(){
     this.errorHandler = function(data, status){
         console.log("Error: " + status);
         console.log(data);
-    }
+    };
 
-});
 
-todoApp.controller('layoutsController', ['Flash', 'sharingService', '$http', '$scope', '$timeout', 
-                                    function(Flash, sharingService, $http, $scope, $timeout){
+
+}]);
+
+todoApp.controller('layoutsController', ['Flash', 'sharingService', '$http', '$scope', '$timeout', '$routeParams', '$location', 
+                                    function(Flash, sharingService, $http, $scope, $timeout,$routeParams,$location){
 
     // Getting Flash messages from backend                                                                 
     $http.get('/messages').then(function (data){
@@ -54,6 +56,20 @@ todoApp.controller('layoutsController', ['Flash', 'sharingService', '$http', '$s
         }
     }, sharingService.errorHandler);
 
+    $http.get('/api/user/' + $routeParams._id ).then(function (data){
+    
+        $scope.user  = data.data;
+        if(!$scope.user && $location.path() !== '/'){
+            $location.path('/');
+            Flash.create('danger', 'Please Sign In');
+            
+        }
+        $scope.$on('$locationChangeSuccess', function(event){
+            if($location.path() === '/')Flash.create('danger', 'Please Sign In');
+            $location.path('/');
+        });
+    }, sharingService.errorHandler);
+
     var updateUser = function(){
         $scope.user = sharingService.user;
     };
@@ -61,12 +77,21 @@ todoApp.controller('layoutsController', ['Flash', 'sharingService', '$http', '$s
     sharingService.registerObserverCallback(updateUser);
 }]);
 
-todoApp.controller('welcomeController', ['Flash', '$scope', '$http', function(Flash, $scope, $http){
-    
+todoApp.controller('welcomeController', ['sharingService','Flash', '$scope', '$http', function(sharingService, Flash, $scope, $http){
+    $scope.form = {
+        email: '',
+        password: ''
+    }
+
+    $scope.login = function(){
+        $http.post('/login', {email: $scope.form.email, password: $scope.form.password}).then(function(data){
+            console.log(data);
+        }, sharingService.errorHandler);
+    };
 }]);
 
-todoApp.controller('profileController', ['Flash', 'sharingService', '$routeParams', '$scope', '$http',
-                                      function(Flash, sharingService, $routeParams, $scope, $http){
+todoApp.controller('profileController', ['Flash', 'sharingService', '$routeParams', '$scope', '$http', '$location', 
+                                    function(Flash, sharingService, $routeParams, $scope, $http, $location){
 
     function filter(obj, condition) {
         var result = {};
@@ -85,13 +110,17 @@ todoApp.controller('profileController', ['Flash', 'sharingService', '$routeParam
     }
 
     // Loading User
-    $http.get('/api/user/' + $routeParams._id ).then(function (data){
+    /*$http.get('/api/user/' + $routeParams._id ).then(function (data){
     
         $scope.user  = data.data;
         sharingService.user = data.data;
         sharingService.notifyObservers();
-        
-        // Loading User's To-do Items////
+        if(!$scope.user){
+            $location.path('/');
+            Flash.create('danger', 'Please Sign In');
+        }
+
+        // Loading User's To-do Items
         $http.get('/api/todos/' + $scope.user._id).then(function(items){
             $scope.todos = items.data;
   
@@ -102,10 +131,11 @@ todoApp.controller('profileController', ['Flash', 'sharingService', '$routeParam
             $scope.done = filter($scope.todos, {completed: true});
 
         }, sharingService.errorHandler);
-        ////////////////////////////////
+        
 
-    }, sharingService.errorHandler);
-
+    }, sharingService.errorHandler);*/
+    //$scope.user = sharingService.user;
+    //console.log(sharingService.user);
     // If item is checked off, moves item to $scope.done and vice-versa
     $scope.checked = function(item) {
         $http.put(`/api/todo/${item._id}`, {completed: (!item.completed)}).then(function(success){

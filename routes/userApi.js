@@ -4,6 +4,7 @@ var Todo = require('../models/todoModel');
 
 module.exports = function(app, passport){
     var flash = app.locals.messages;
+
     app.post('/api/user', function(req, res, next){
         passport.authenticate('local-signup', function(err, user, info){
             if(err) throw err;
@@ -30,18 +31,13 @@ module.exports = function(app, passport){
     });
     
     app.get('/api/user/:_id', function(req, res){
+
         User.findById(req.params._id, function(err, user){
             if(err){throw err;}
             else {
                 res.send(user);
             }
         });
-        Todo.find({userId: req.params._id}, function(err, list){
-            for(let c = 0; c < list.length; c++){
-                console.log(list[c]._id);
-            }
-        });
-
     });
 
     app.post('/api/user/:_id', function(req, res){

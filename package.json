@@ -15,6 +15,7 @@
     "morgan": "^1.8.2"
   },
   "dependencies": {
+    "acl": "^0.4.10",
     "angular-flash-alert": "^2.4.0",
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.17.2",
