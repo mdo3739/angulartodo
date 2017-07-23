@@ -44,11 +44,9 @@ module.exports = function(passport){
         User.findOne({'email': email.toUpperCase()}, function(err, user){
             if(err) return done(err);
             if(!user){
-                console.log("User not found");
                 return done(null, false, {message: "User Not Found"});
             }
             if (!user.validPassword(password)){
-                console.log("Wrong Password");
                 return done(null, false, {message: "Wrong Password"});
             }
 

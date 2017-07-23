@@ -20,21 +20,16 @@ todoApp.config(function($routeProvider){
     })
 });
 
-todoApp.service('sharingService', [ '$routeParams','$location', function($routeParams,$location){
-    
-    // Loads user after logging in to update Navbar
-    var observerCallbacks = [];
-    this.registerObserverCallback = function(callback){
-        observerCallbacks.push(callback);
-    };
-    this.notifyObservers = function(){
-        angular.forEach(observerCallbacks, function(callback){
-            callback();
-        });
+todoApp.service('sharingService', ['$location', function($location){
+
+    var self = this;
+    self.list = [];
+    self.loggedIn = function(){
+        self.list[0]();
     };
     
     // Error Handler
-    this.errorHandler = function(data, status){
+    self.errorHandler = function(data, status){
         console.log("Error: " + status);
         console.log(data);
     };
@@ -43,20 +38,21 @@ todoApp.service('sharingService', [ '$routeParams','$location', function($routeP
 
 }]);
 
-todoApp.controller('layoutsController', ['Flash', 'sharingService', '$http', '$scope', '$timeout', '$routeParams', '$location', 
-                                    function(Flash, sharingService, $http, $scope, $timeout,$routeParams,$location){
+todoApp.controller('layoutsController', ['Flash', 'sharingService', '$scope','$location', '$http',
+                                    function(Flash, sharingService, $scope, $location, $http){
 
-    // Getting Flash messages from backend                                                                 
-    $http.get('/messages').then(function (data){
-    
-        var message = data.data[0];
-        if(message){
-            Flash.create(message.type, message.message, 5000);
-            $http.delete('/messages');
-        }
-    }, sharingService.errorHandler);
+    sharingService.list.push(function(){
+        $scope.user = sharingService.user;
+    });
 
-    $http.get('/api/user/' + $routeParams._id ).then(function (data){
+    $scope.logout = function(){
+        $http.get('/logout').then(function(reaction){
+            $location.path('/');
+            Flash.create(reaction.data.type, reaction.data.message);
+        }, sharingService.errorHandler);
+    }
+
+    /*$http.get('/api/user/' + $routeParams._id ).then(function (data){
     
         $scope.user  = data.data;
         if(!$scope.user && $location.path() !== '/'){
@@ -68,24 +64,29 @@ todoApp.controller('layoutsController', ['Flash', 'sharingService', '$http', '$s
             if($location.path() === '/')Flash.create('danger', 'Please Sign In');
             $location.path('/');
         });
-    }, sharingService.errorHandler);
-
-    var updateUser = function(){
-        $scope.user = sharingService.user;
-    };
-
-    sharingService.registerObserverCallback(updateUser);
+    }, sharingService.errorHandler); */
 }]);
 
-todoApp.controller('welcomeController', ['sharingService','Flash', '$scope', '$http', function(sharingService, Flash, $scope, $http){
+todoApp.controller('welcomeController', ['sharingService','Flash', '$scope', '$http', '$location', function(sharingService, Flash, $scope, $http, $location){
     $scope.form = {
         email: '',
         password: ''
     }
 
     $scope.login = function(){
-        $http.post('/login', {email: $scope.form.email, password: $scope.form.password}).then(function(data){
-            console.log(data);
+        $http.post('/login', $scope.form).then(function(reaction){
+
+            // reaction.data.userId will only be present if login was successful
+            let id = reaction.data.userId;
+            if(id){
+                $http.get('/api/user/' + id ).then(function (data){
+                    sharingService.user  = data.data;
+                    sharingService.loggedIn();
+
+                    $location.path('/' + sharingService.user.username);
+                    Flash.create('success', 'Logged In');
+                }, sharingService.errorHandler);
+            }
         }, sharingService.errorHandler);
     };
 }]);

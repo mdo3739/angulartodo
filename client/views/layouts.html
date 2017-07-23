@@ -8,11 +8,11 @@
 
   <body ng-controller='layoutsController'>
     <nav class="navbar navbar-default navbar-fixed-top" >
-      <div class="container-fluid">
+      <div class="container-fluid" ng-if='user'>
         <a class="navbar-brand" href="/#!/{{user._id}}">Welcome {{user.username}}</a>
-        <ul class="nav navbar-nav navbar-right" ng-if='user'>
+        <ul class="nav navbar-nav navbar-right">
           <li class="btn-group btn"><a href="/#!/account/{{user._id}}">Account</a></li>
-          <li class="btn-group btn"><a href="/logout">Signout</a></li>
+          <li class="btn-group btn"><a ng-click='logout()'>Signout</a></li>
         </ul>
       </div>
     </nav>

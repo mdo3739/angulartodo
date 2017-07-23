@@ -38,7 +38,6 @@ app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 
 // Load routes and pass in app and fully configured passport
-require('./routes/flashMessagesApi.js')(app);
 require('./routes/todoApi.js')(app, passport);
 require('./routes/userApi.js')(app, passport);
 require('./routes/welcome.js')(app, passport);

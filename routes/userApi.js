@@ -1,16 +1,12 @@
 var User = require('../models/userModel');
-var crypto = require('crypto');
 var Todo = require('../models/todoModel');
 
 module.exports = function(app, passport){
-    var flash = app.locals.messages;
-
     app.post('/api/user', function(req, res, next){
         passport.authenticate('local-signup', function(err, user, info){
             if(err) throw err;
             if(!user){
-                flash.push({type: 'warning', message: info.message});
-                res.redirect('/');
+                res.send({type: 'warning', message: info.message});
             } else {
                 user.username = req.body.username;
                 user.memberSince = Date.now();

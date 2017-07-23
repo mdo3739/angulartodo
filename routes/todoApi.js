@@ -1,7 +1,6 @@
 var express = require('express');
 var Todo = require('../models/todoModel');
-var bodyParser = require('body-parser');
-var jsonParser = bodyParser.json();
+var jsonParser = require('body-parser').json;
 
 module.exports = function(app, passport){
     app.get('/api/todos/:userId', function(req, res){
