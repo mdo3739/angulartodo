@@ -25,7 +25,7 @@ if(env === 'development'){
 	}));
 }
 
-require('./routes/nodemailerApi.js')();
+//require('./routes/nodemailerApi.js')();
 // Middlewares
 app.use("/client", express.static(__dirname + '/client'));
 app.use('/dist', express.static(__dirname + '/node_modules/angular-flash-alert/dist/'));

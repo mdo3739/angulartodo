@@ -13,7 +13,8 @@ module.exports = function(app, passport){
     });
 
     app.post('/api/todo', jsonParser, function(req, res){
-
+        console.log(req.user);
+        console.log(req.body.todo);
         var newTodo = new Todo({
             userId: req.user._id,
             todo: req.body.todo,

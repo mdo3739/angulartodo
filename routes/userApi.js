@@ -12,16 +12,13 @@ module.exports = function(app, passport){
                 user.memberSince = Date.now();
                 user.save(function(err){
                     if(err){
-                        flash.push({type: 'danger', message: "Something went wrong! Please try again"});
+                        res.send({type: 'danger', message: "Something went wrong! Please try again"});
                         res.redirect('/');
                     }
                     else{
-                        console.log("Save Successful");
-                        flash.push({type: 'success', message: info.message});
+                        res.send({type: 'success', message: info.message, userId: user._id});
                     }
                 })
-                
-                return res.redirect('/#!/' + user._id);
             }
         })(req, res, next);
     });
@@ -36,6 +33,15 @@ module.exports = function(app, passport){
         });
     });
 
+    app.get('/api/isLoggedIn', function(req, res){
+        if(req.userId){
+            User.findById(req.userId, function(err, user){
+                if(err) throw err;
+                else res.send(user);
+            });
+        } else res.send();
+    });
+
     app.post('/api/user/:_id', function(req, res){
 
         User.findByIdAndRemove(req.params._id, function(err, user){
@@ -45,8 +51,7 @@ module.exports = function(app, passport){
                     if(err) throw err;
                     else console.log(numRemoved +" items Deleted");
                 });
-                flash.push({type: 'success', message: 'Account Deleted'});
-                res.redirect('/');
+                res.send({type: 'success', message: 'Account Deleted'});
             }
         });
     });
