@@ -1,6 +1,6 @@
 var express = require('express');
 var Todo = require('../models/todoModel');
-var jsonParser = require('body-parser').json;
+var jsonParser = require('body-parser').json();
 
 module.exports = function(app, passport){
     app.get('/api/todos/:userId', function(req, res){
@@ -13,20 +13,19 @@ module.exports = function(app, passport){
     });
 
     app.post('/api/todo', jsonParser, function(req, res){
-        console.log(req.user);
-        console.log(req.body.todo);
+
         var newTodo = new Todo({
             userId: req.user._id,
             todo: req.body.todo,
             dateCreated: Date.now(),
             completed: false
         });
-
         newTodo.save(function(err){
-            if(err) {throw err;}
+            if(err) {
+                res.send({type: 'danger', message: 'Something went wrong. Please try again'});
+            }
             else {
-                console.log('To-do Added');
-                res.send(newTodo)
+                res.send({type: 'success', message: 'Item Saved', newTodo})
             }
         });
 

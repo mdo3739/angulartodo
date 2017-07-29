@@ -31,30 +31,37 @@ todoApp.controller('layoutsController', ['Flash', 'sharingService', '$scope','$l
 
     $scope.$on('logged in', function(){
         $scope.user = sharingService.user;
-        $scope.$broadcast('Logged In');
+    });
+
+    $scope.$on('profileController created', function(){
+        $scope.$broadcast('load todos');
     });
 
     // Check to see if Logged in upon refresh
     if(!sharingService.user){
         $http.get('/api/isLoggedIn').then(function(reaction){
 
-            sharingService.user = reaction.data;
-            $scope.user = reaction.data;
+            if(reaction.data){
+                sharingService.user = reaction.data;
+                $scope.user = reaction.data;
+                $scope.$broadcast('load todos');
+            } else {
 
-            // If not logged in redirect to home page
-            if(!$scope.user && $location.path() !== '/'){
-                $location.path('/');
-                Flash.create('danger', 'Please Sign In');
-            }
-
-            // Redirect to home page if URL is changed while not logged in
-            $scope.$on('$locationChangeSuccess', function(event){
-                if(!$scope.user && $location.path() !== '/'){
+                // If not logged in redirect to home page
+                if($location.path() !== '/'){
                     $location.path('/');
                     Flash.create('danger', 'Please Sign In');
-                    
                 }
-            });
+
+                // Redirect to home page if URL is changed while not logged in
+                $scope.$on('$locationChangeSuccess', function(event){
+                    if(!$scope.user && $location.path() !== '/'){
+                        $location.path('/');
+                        Flash.create('danger', 'Please Sign In');
+                        
+                    }
+                });
+            }
         }, sharingService.errorHandler);
     } 
 
@@ -67,19 +74,16 @@ todoApp.controller('layoutsController', ['Flash', 'sharingService', '$scope','$l
         }, sharingService.errorHandler);
     }
 
-    
-
-
 }]);
 
 todoApp.controller('welcomeController', ['sharingService','Flash', '$scope', '$http', '$location', function(sharingService, Flash, $scope, $http, $location){
-    $scope.form = {
+    $scope.loginForm = {
         email: '',
         password: ''
     }
 
     $scope.login = function(){
-        $http.post('/login', $scope.form).then(function(reaction){
+        $http.post('/login', $scope.loginForm).then(function(reaction){
 
             // reaction.data.userId will only be present if login was successful
             let id = reaction.data.userId;
@@ -89,10 +93,30 @@ todoApp.controller('welcomeController', ['sharingService','Flash', '$scope', '$h
                     $scope.$emit('logged in');
 
                     $location.path('/' + sharingService.user.username);
-                    Flash.create('success', 'Logged In');
                 }, sharingService.errorHandler);
             }
+            Flash.create(reaction.data.type, reaction.data.message);
         }, sharingService.errorHandler);
+    };
+
+    $scope.signupForm = {
+        email: '',
+        password: '',
+        username: ''
+    }
+    $scope.signup = function(){
+        $http.post('/api/user', $scope.signupForm).then(function(reaction){
+            let id = reaction.data.userId;
+            if(id){
+                $http.get('/api/user/' + id ).then(function (data){
+                    sharingService.user  = data.data;
+                    $scope.$emit('logged in');
+
+                    $location.path('/' + sharingService.user.username);
+                }, sharingService.errorHandler);
+            }
+            Flash.create(reaction.data.type, reaction.data.message);
+        });
     };
 }]);
 
@@ -118,18 +142,21 @@ todoApp.controller('profileController', ['Flash', 'sharingService', '$routeParam
     $scope.user = sharingService.user;
 
     // Loading User's To-do Items
-    $scope.$on("Logged In", function(){
+    $scope.$on("load todos", function(){
+        
         $http.get('/api/todos/' + sharingService.user._id).then(function(items){
                 $scope.todos = items.data;
-      
+                
                 // Loading Open To-dos
                 $scope.open = filter($scope.todos, {completed: false});
-                
+
                 // Loading Finished To-dos
                 $scope.done = filter($scope.todos, {completed: true});
 
         }, sharingService.errorHandler);
     });
+
+    $scope.$emit('profileController created');
 
     // If item is checked off, moves item to $scope.done and vice-versa
     $scope.checked = function(item) {
@@ -146,11 +173,13 @@ todoApp.controller('profileController', ['Flash', 'sharingService', '$routeParam
 
     // Adds New Items
     $scope.addTodo = function(){
-console.log("HELLOasdf");
+
         $http.post('api/todo', {todo: $scope.addTodoText}).then(function(reaction){
-            console.log("HELLO");
-            $scope.open[reaction.data._id] = reaction.data;
+            var newTodo = reaction.data.newTodo;
+            $scope.open[newTodo._id] = newTodo;
             $scope.addTodoText = '';
+            console.log(reaction.data.type);
+            Flash.create(reaction.data.type, reaction.data.message);
         }, sharingService.errorHandler);
     }
 
@@ -221,10 +250,17 @@ console.log("HELLOasdf");
     };
 }]);
 
-todoApp.controller('accountController', ['sharingService', '$scope', '$routeParams', '$http', 
-                                    function(sharingService, $scope, $routeParams, $http){
+todoApp.controller('accountController', ['Flash', 'sharingService', '$scope', '$location', '$http', 
+                                    function(Flash, sharingService, $scope, $location, $http){
 
-    $scope.id = $routeParams._id;
+    $scope.deleteAccount = function(){
+        $http.delete('/api/user').then(function(reaction){
+            $scope.user = null;
+            sharingService.user = null;
+            $location.path('/');
+            Flash.create(reaction.data.type, reaction.data.message);
+        }, sharingService.errorHandler);
+    };
 
 }]);
 

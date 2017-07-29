@@ -1,8 +1,9 @@
 var User = require('../models/userModel');
 var Todo = require('../models/todoModel');
+var jsonParser = require('body-parser').json();
 
 module.exports = function(app, passport){
-    app.post('/api/user', function(req, res, next){
+    app.post('/api/user', jsonParser, function(req, res, next){
         passport.authenticate('local-signup', function(err, user, info){
             if(err) throw err;
             if(!user){
@@ -13,12 +14,14 @@ module.exports = function(app, passport){
                 user.save(function(err){
                     if(err){
                         res.send({type: 'danger', message: "Something went wrong! Please try again"});
-                        res.redirect('/');
                     }
                     else{
+                        req.logIn(user, function(err) {
+                            if (err) { return next(err); }
+                        });
                         res.send({type: 'success', message: info.message, userId: user._id});
                     }
-                })
+                });
             }
         })(req, res, next);
     });
@@ -42,12 +45,13 @@ module.exports = function(app, passport){
         } else res.send();
     });
 
-    app.post('/api/user/:_id', function(req, res){
-
-        User.findByIdAndRemove(req.params._id, function(err, user){
-            if(err) throw err;
+    app.delete('/api/user', function(req, res){
+        let id = req.userId;
+        console.log(id);
+        User.findByIdAndRemove(id, function(err, user){
+            if(err) res.send({type: 'danger', message: "Something went wrong. Please try again"});
             else{
-                Todo.remove({userId: req.params._id}, function(err, numRemoved){
+                Todo.remove({userId: id}, function(err, numRemoved){
                     if(err) throw err;
                     else console.log(numRemoved +" items Deleted");
                 });
